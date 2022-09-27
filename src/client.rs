@@ -27,7 +27,11 @@ impl Default for HyperDnsClient {
         http_connector.enforce_http(false);
         let mut connector = HttpsConnector::from((
             http_connector,
-            native_tls::TlsConnector::new().unwrap().into(),
+            native_tls::TlsConnector::builder()
+                .danger_accept_invalid_hostnames(true)
+                .build()
+                .unwrap()
+                .into(),
         ));
         connector.https_only(true);
         HyperDnsClient {

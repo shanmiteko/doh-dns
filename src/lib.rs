@@ -92,43 +92,13 @@ struct DnsResponse {
     Comment: Option<String>,
 }
 
-/// The list of DNS over HTTPS servers allowed to query with their respective timeouts.
-/// These servers are given to [Dns::with_servers] in order of priority. Only subsequent
-/// servers are used if the request needs to be retried.
-#[derive(Clone)]
-pub enum DnsHttpsServer {
-    /// Googe's DoH server. Unfortunately, Google doesn't allow to query `8.8.8.8` or
-    /// `8.8.4.4` directly. It needs the hostname `dns.google`. If this option is
-    /// given, `8.8.8.8` and `8.8.4.4` will be used in round robin form for each new
-    /// connection.
-    Google(Duration),
-    /// Cloudflare's `1.1.1.1` DOH server. Cloudflare does not respond to `ANY` Dns
-    /// requests so [Dns::resolve_any] will always return an error.
-    Cloudflare1_1_1_1(Duration),
-    /// Cloudflare's `1.0.0.1` DOH server. Cloudflare does not respond to `ANY` Dns
-    /// requests so [Dns::resolve_any] will always return an error.
-    Cloudflare1_0_0_1(Duration),
-}
-
-impl DnsHttpsServer {
-    fn uri(&self) -> &str {
-        match self {
-            Self::Google(_) => "https://dns.google/resolve",
-            Self::Cloudflare1_1_1_1(_) => "https://1.1.1.1/dns-query",
-            Self::Cloudflare1_0_0_1(_) => "https://1.0.0.1/dns-query",
-        }
-    }
-    fn timeout(&self) -> Duration {
-        match self {
-            Self::Google(t) => *t,
-            Self::Cloudflare1_1_1_1(t) => *t,
-            Self::Cloudflare1_0_0_1(t) => *t,
-        }
-    }
+pub trait DnsHttpsServer: Clone {
+    fn uri(&self) -> &str;
+    fn timeout(&self) -> Duration;
 }
 
 /// The main interface to this library. It provides all functions to query records.
-pub struct Dns<C: client::DnsClient> {
+pub struct Dns<C: client::DnsClient, S: DnsHttpsServer> {
     client: C,
-    servers: Vec<DnsHttpsServer>,
+    servers: Vec<S>,
 }

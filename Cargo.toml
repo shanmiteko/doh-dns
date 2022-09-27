@@ -15,19 +15,19 @@ Google and Clouflare based on `async/await`, `hyper`, and `tokio`.
 """
 
 [dependencies]
-hyper = "0.13.1"
-hyper-tls = "0.4.1"
+hyper = { version = "0.14.20", features = ["full"] }
+hyper-tls = "0.5.0"
 native-tls = "0.2"
-futures-util = "0.3.1"
+futures-util = "0.3.24"
 serde_json = "1.0"
 serde_derive = "1.0"
 serde = "1.0"
-async-trait = "0.1.13"
-num = "0.2.0"
+async-trait = "0.1.57"
+num = "0.4.0"
 num-traits = "0.2"
-num-derive = "0.3.0"
-idna = "0.2.0"
-tokio = { version = "0.2.9", features = ["full"] }
-tower-service = "0.3.0"
-paste = "0.1.6"
-log = "0.4.8"
+num-derive = "0.3.3"
+idna = "0.3.0"
+tokio = { version = "1.21.1", features = ["full"] }
+tower-service = "0.3.2"
+paste = "1.0.9"
+log = "0.4.17"
